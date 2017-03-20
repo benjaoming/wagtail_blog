@@ -7,3 +7,4 @@ django-contrib-comments==1.7.3
 django-comments-xtd==1.6.3
 requests
 lxml
+six
