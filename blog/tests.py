@@ -11,7 +11,15 @@ from wagtail.wagtailcore.models import Page
 from .models import (BlogPage, BlogTag, BlogPageTag, BlogIndexPage,
                      BlogCategory, BlogCategoryBlogPage)
 from .management.commands.wordpress_to_wagtail import Command
+from . import settings
 from . import wp_xml_parser
+
+
+# Py2+3
+try:
+    from imp import reload  # @UnusedImport NOQA
+except NameError:
+    from importlib import reload  # @UnusedImport NOQA @Reimport
 
 
 def load_tests(loader, tests, ignore):
@@ -66,6 +74,7 @@ class BlogTests(TestCase):
             owner=self.user))
 
         with self.settings(BLOG_LIMIT_AUTHOR_CHOICES_GROUP=None, BLOG_LIMIT_AUTHOR_CHOICES_ADMIN=False):
+            reload(settings)
             response = self.client.get(
                 reverse('wagtailadmin_pages:edit', args=(blog_page.id, )),
                 follow=True
@@ -75,6 +84,7 @@ class BlogTests(TestCase):
             self.assertNotContains(response, 'mr.author')
 
         with self.settings(BLOG_LIMIT_AUTHOR_CHOICES_GROUP=bloggers, BLOG_LIMIT_AUTHOR_CHOICES_ADMIN=False):
+            reload(settings)
             response = self.client.get(
                 reverse('wagtailadmin_pages:edit', args=(blog_page.id, )),
                 follow=True
@@ -84,6 +94,7 @@ class BlogTests(TestCase):
             self.assertContains(response, 'mr.author')
 
         with self.settings(BLOG_LIMIT_AUTHOR_CHOICES_GROUP=bloggers, BLOG_LIMIT_AUTHOR_CHOICES_ADMIN=True):
+            reload(settings)
             response = self.client.get(
                 reverse('wagtailadmin_pages:edit', args=(blog_page.id, )),
                 follow=True
@@ -93,6 +104,7 @@ class BlogTests(TestCase):
             self.assertContains(response, 'mr.author')
 
         with self.settings(BLOG_LIMIT_AUTHOR_CHOICES_GROUP=[bloggers, others], BLOG_LIMIT_AUTHOR_CHOICES_ADMIN=False):
+            reload(settings)
             response = self.client.get(
                 reverse('wagtailadmin_pages:edit', args=(blog_page.id, )),
                 follow=True
@@ -102,6 +114,7 @@ class BlogTests(TestCase):
             self.assertContains(response, 'mr.author')
 
         with self.settings(BLOG_LIMIT_AUTHOR_CHOICES_GROUP=[bloggers, others], BLOG_LIMIT_AUTHOR_CHOICES_ADMIN=True):
+            reload(settings)
             response = self.client.get(
                 reverse('wagtailadmin_pages:edit', args=(blog_page.id, )),
                 follow=True
@@ -229,4 +242,3 @@ class BlogTests(TestCase):
         parent_comment = XtdComment.objects.get(level=0)
         child_comment = XtdComment.objects.get(level=1)
         self.assertEqual(parent_comment.id, child_comment.parent_id)
-
