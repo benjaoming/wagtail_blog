@@ -1,18 +1,20 @@
 import doctest
 import json
 
-from django.core.management import call_command
+from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
+from django.core.management import call_command
+from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.test.utils import override_settings
 from django_comments_xtd.models import XtdComment
-
 from wagtail.wagtailcore.models import Page
 
-from .models import (BlogPage, BlogTag, BlogPageTag, BlogIndexPage,
-                     BlogCategory, BlogCategoryBlogPage)
-from .management.commands.wordpress_to_wagtail import Command
 from . import settings
 from . import wp_xml_parser
+from .management.commands.wordpress_to_wagtail import Command
+from .models import (BlogPage, BlogTag, BlogPageTag, BlogIndexPage,
+                     BlogCategory, BlogCategoryBlogPage)
 
 
 # Py2+3
@@ -22,14 +24,28 @@ except NameError:
     from importlib import reload  # @UnusedImport NOQA @Reimport
 
 
+class blog_override_settings(override_settings):
+    """
+    Adds extra reloading of blog.settings
+    """
+    def __enter__(self):
+        super(blog_override_settings, self).__enter__()
+        reload(settings)
+
+
 def load_tests(loader, tests, ignore):
     tests.addTests(doctest.DocTestSuite(wp_xml_parser))
     return tests
-from django.core.urlresolvers import reverse
-from django.contrib.auth.models import Group
 
 
 class BlogTests(TestCase):
+
+    def settings(self, **kwargs):
+        """
+        A context manager that temporarily sets a setting and reverts to the original value when exiting the context.
+        """
+        return blog_override_settings(**kwargs)
+
     def setUp(self):
         home = Page.objects.get(slug='home')
         self.user = User.objects.create_user('test', 'test@test.test', 'pass')
@@ -74,7 +90,6 @@ class BlogTests(TestCase):
             owner=self.user))
 
         with self.settings(BLOG_LIMIT_AUTHOR_CHOICES_GROUP=None, BLOG_LIMIT_AUTHOR_CHOICES_ADMIN=False):
-            reload(settings)
             response = self.client.get(
                 reverse('wagtailadmin_pages:edit', args=(blog_page.id, )),
                 follow=True
@@ -84,7 +99,6 @@ class BlogTests(TestCase):
             self.assertNotContains(response, 'mr.author')
 
         with self.settings(BLOG_LIMIT_AUTHOR_CHOICES_GROUP=bloggers, BLOG_LIMIT_AUTHOR_CHOICES_ADMIN=False):
-            reload(settings)
             response = self.client.get(
                 reverse('wagtailadmin_pages:edit', args=(blog_page.id, )),
                 follow=True
@@ -94,7 +108,6 @@ class BlogTests(TestCase):
             self.assertContains(response, 'mr.author')
 
         with self.settings(BLOG_LIMIT_AUTHOR_CHOICES_GROUP=bloggers, BLOG_LIMIT_AUTHOR_CHOICES_ADMIN=True):
-            reload(settings)
             response = self.client.get(
                 reverse('wagtailadmin_pages:edit', args=(blog_page.id, )),
                 follow=True
@@ -104,7 +117,6 @@ class BlogTests(TestCase):
             self.assertContains(response, 'mr.author')
 
         with self.settings(BLOG_LIMIT_AUTHOR_CHOICES_GROUP=[bloggers, others], BLOG_LIMIT_AUTHOR_CHOICES_ADMIN=False):
-            reload(settings)
             response = self.client.get(
                 reverse('wagtailadmin_pages:edit', args=(blog_page.id, )),
                 follow=True
@@ -114,7 +126,6 @@ class BlogTests(TestCase):
             self.assertContains(response, 'mr.author')
 
         with self.settings(BLOG_LIMIT_AUTHOR_CHOICES_GROUP=[bloggers, others], BLOG_LIMIT_AUTHOR_CHOICES_ADMIN=True):
-            reload(settings)
             response = self.client.get(
                 reverse('wagtailadmin_pages:edit', args=(blog_page.id, )),
                 follow=True
