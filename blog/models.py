@@ -83,7 +83,7 @@ class BlogIndexPage(Page):
         page_size = 10
         if hasattr(settings, 'BLOG_PAGINATION_PER_PAGE'):
             page_size = settings.BLOG_PAGINATION_PER_PAGE
-
+            
         if page_size is not None:
             paginator = Paginator(blogs, page_size)  # Show 10 blogs per page
             try:
@@ -92,12 +92,15 @@ class BlogIndexPage(Page):
                 blogs = paginator.page(1)
             except EmptyPage:
                 blogs = paginator.page(paginator.num_pages)
+        else:
+            paginator = None
 
         context['blogs'] = blogs
         context['category'] = category
         context['tag'] = tag
         context['author'] = author
         context['COMMENTS_APP'] = COMMENTS_APP
+        context['paginator'] = paginator
         context = get_blog_context(context)
 
         return context
