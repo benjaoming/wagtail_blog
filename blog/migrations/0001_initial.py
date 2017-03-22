@@ -6,6 +6,7 @@ import wagtail.wagtailcore.fields
 import django.db.models.deletion
 import modelcluster.fields
 import modelcluster.tags
+import swapper
 
 
 class Migration(migrations.Migration):
@@ -14,6 +15,10 @@ class Migration(migrations.Migration):
         ('wagtailcore', '0010_change_page_owner_to_null_on_delete'),
         ('taggit', '0001_initial'),
         ('wagtailimages', '0005_make_filter_spec_unique'),
+        swapper.dependency('blog', 'BlogPage'),
+        swapper.dependency('blog', 'BlogIndexPage'),
+        swapper.dependency('blog', 'BlogCategory'),
+        swapper.dependency('blog', 'BlogTag'),
     ]
 
     operations = [
@@ -26,6 +31,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'ordering': ['name'],
+                'swappable': swapper.swappable_setting('blog', 'BlogCategory'),
             },
             bases=(models.Model,),
         ),
@@ -34,7 +40,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, serialize=False, verbose_name='ID', auto_created=True)),
                 ('sort_order', models.IntegerField(null=True, blank=True, editable=False)),
-                ('category', models.ForeignKey(related_name='+', to='blog.BlogCategory')),
+                ('category', models.ForeignKey(related_name='+', to=swapper.get_model_name('blog', 'BlogCategory'))),
             ],
             options={
                 'abstract': False,
@@ -49,6 +55,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'abstract': False,
+                'swappable': swapper.swappable_setting('blog', 'BlogIndexPage'),
             },
             bases=('wagtailcore.page',),
         ),
@@ -61,6 +68,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'abstract': False,
+                'swappable': swapper.swappable_setting('blog', 'BlogPage'),
             },
             bases=('wagtailcore.page',),
         ),
@@ -68,7 +76,7 @@ class Migration(migrations.Migration):
             name='BlogPageTag',
             fields=[
                 ('id', models.AutoField(primary_key=True, serialize=False, verbose_name='ID', auto_created=True)),
-                ('content_object', modelcluster.fields.ParentalKey(related_name='tagged_items', to='blog.BlogPage')),
+                ('content_object', modelcluster.fields.ParentalKey(related_name='tagged_items', to=swapper.get_model_name('blog', 'BlogPage'))),
                 ('tag', models.ForeignKey(related_name='blog_blogpagetag_items', to='taggit.Tag')),
             ],
             options={
@@ -85,7 +93,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='blogcategoryblogpage',
             name='page',
-            field=modelcluster.fields.ParentalKey(related_name='categories', to='blog.BlogPage'),
+            field=modelcluster.fields.ParentalKey(related_name='categories', to=swapper.get_model_name('blog', 'BlogPage')),
             preserve_default=True,
         ),
     ]

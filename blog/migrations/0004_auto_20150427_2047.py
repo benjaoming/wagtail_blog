@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 import wagtail.wagtailcore.fields
 import django.db.models.deletion
+import swapper
 
 
 class Migration(migrations.Migration):
@@ -14,16 +15,16 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterModelOptions(
-            name='blogcategory',
-            options={'ordering': ['name'], 'verbose_name_plural': 'Blog Categories', 'verbose_name': 'Blog Category'},
-        ),
-        migrations.AlterModelOptions(
             name='blogindexpage',
-            options={'verbose_name': 'Blog index'},
+            options={
+                'swappable': swapper.swappable_setting('blog', 'BlogIndexPage'),
+            },
         ),
         migrations.AlterModelOptions(
             name='blogpage',
-            options={'verbose_name_plural': 'Blog pages', 'verbose_name': 'Blog page'},
+            options={
+                'swappable': swapper.swappable_setting('blog', 'BlogPage'),
+            },
         ),
         migrations.AddField(
             model_name='blogcategory',
@@ -34,13 +35,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='blogcategory',
             name='parent',
-            field=models.ForeignKey(blank=True, null=True, to='blog.BlogCategory', help_text='Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional.'),
+            field=models.ForeignKey(blank=True, null=True, to=swapper.get_model_name('blog', 'BlogCategory'), help_text='Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional.'),
             preserve_default=True,
         ),
         migrations.AlterField(
             model_name='blogcategoryblogpage',
             name='category',
-            field=models.ForeignKey(verbose_name='Category', related_name='+', to='blog.BlogCategory'),
+            field=models.ForeignKey(verbose_name='Category', related_name='+', to=swapper.get_model_name('blog', 'BlogCategory')),
             preserve_default=True,
         ),
         migrations.AlterField(

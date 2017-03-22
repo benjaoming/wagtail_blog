@@ -41,6 +41,24 @@ See http://docs.wagtail.io
 - `BLOG_LIMIT_AUTHOR_CHOICES_GROUP` Optionally set this to limit the author field choices based on this Django Group. Otherwise it defaults to check if user is_staff. Set to a tuple to allow multiple groups.
 - `BLOG_LIMIT_AUTHOR_CHOICES_ADMIN` Set to true if limiting authors to multiple groups and want to add is_staff users as well.
 
+## Customizing models
+
+Wagtail_blog uses swappable models.
+
+This is the same pattern as used by `django.contrib.auth.models.User`. It
+means, that you can write your own blog model, inheriting from the base models
+provided in `blog.models.base`.
+
+- `BLOG_BLOGPAGE_MODEL` - Used for blog posts.
+- `BLOG_BLOGINDEXPAGE_MODEL` - The index page type used for lists of blog posts.
+- `BLOG_BLOGCATEGORY_MODEL` - Category model
+- `BLOG_BLOGTAG_MODEL` - Model for tags, (default: Proxy of `taggit.Tag`).
+
+
+Example:
+
+    BLOG_BLOGPAGE_MODEL = "myapp.BlogPage"
+
 # Import from WordPress
 
 The import feature requires `django-contrib-comments` and `django-comments-xtd`

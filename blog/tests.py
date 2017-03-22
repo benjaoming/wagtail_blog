@@ -1,27 +1,51 @@
 import doctest
 import json
 
-from django.core.management import call_command
+from django.contrib.auth.models import Group
 from django.contrib.auth.models import User
+from django.core.management import call_command
+from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.test.utils import override_settings
 from django_comments_xtd.models import XtdComment
-
 from wagtail.wagtailcore.models import Page
 
+from . import settings
+from . import wp_xml_parser
+from .management.commands.wordpress_to_wagtail import Command
 from .models import (BlogPage, BlogTag, BlogPageTag, BlogIndexPage,
                      BlogCategory, BlogCategoryBlogPage)
-from .management.commands.wordpress_to_wagtail import Command
-from . import wp_xml_parser
+
+
+# Py2+3
+try:
+    from imp import reload  # @UnusedImport NOQA
+except NameError:
+    from importlib import reload  # @UnusedImport NOQA @Reimport
+
+
+class blog_override_settings(override_settings):
+    """
+    Adds extra reloading of blog.settings
+    """
+    def __enter__(self):
+        super(blog_override_settings, self).__enter__()
+        reload(settings)
 
 
 def load_tests(loader, tests, ignore):
     tests.addTests(doctest.DocTestSuite(wp_xml_parser))
     return tests
-from django.core.urlresolvers import reverse
-from django.contrib.auth.models import Group
 
 
 class BlogTests(TestCase):
+
+    def settings(self, **kwargs):
+        """
+        A context manager that temporarily sets a setting and reverts to the original value when exiting the context.
+        """
+        return blog_override_settings(**kwargs)
+
     def setUp(self):
         home = Page.objects.get(slug='home')
         self.user = User.objects.create_user('test', 'test@test.test', 'pass')
@@ -229,4 +253,3 @@ class BlogTests(TestCase):
         parent_comment = XtdComment.objects.get(level=0)
         child_comment = XtdComment.objects.get(level=1)
         self.assertEqual(parent_comment.id, child_comment.parent_id)
-

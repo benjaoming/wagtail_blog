@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import datetime
+import swapper
 
 
 class Migration(migrations.Migration):
@@ -12,10 +13,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterModelOptions(
-            name='blogcategory',
-            options={'ordering': ['name'], 'verbose_name_plural': 'Blog Categories'},
-        ),
         migrations.AddField(
             model_name='blogpage',
             name='date',

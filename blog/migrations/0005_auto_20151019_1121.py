@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 from django.conf import settings
 import datetime
+import swapper
 
 
 def default_author(apps, schema_editor):
@@ -29,6 +30,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'proxy': True,
+                'swappable': swapper.swappable_setting('blog', 'BlogTag'),
             },
             bases=('taggit.tag',),
         ),
@@ -40,12 +42,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='blogpage',
             name='blog_categories',
-            field=models.ManyToManyField(to='blog.BlogCategory', blank=True, through='blog.BlogCategoryBlogPage'),
+            field=models.ManyToManyField(to=swapper.get_model_name('blog', 'BlogPage'), blank=True, through='blog.BlogCategoryBlogPage'),
         ),
         migrations.AlterField(
             model_name='blogcategory',
             name='parent',
-            field=models.ForeignKey(to='blog.BlogCategory', help_text='Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional.', related_name='children', null=True, blank=True),
+            field=models.ForeignKey(to=swapper.get_model_name('blog', 'BlogCategory'), help_text='Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional.', related_name='children', null=True, blank=True),
         ),
         migrations.AlterField(
             model_name='blogpage',

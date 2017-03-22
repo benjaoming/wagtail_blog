@@ -7,3 +7,4 @@ django-contrib-comments==1.8.0
 django-comments-xtd==2.0.10
 requests
 lxml
+swapper>=1,<2
