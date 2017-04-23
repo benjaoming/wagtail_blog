@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='blogpage',
             name='blog_categories',
-            field=models.ManyToManyField(to=swapper.get_model_name('blog', 'BlogPage'), blank=True, through='blog.BlogCategoryBlogPage'),
+            field=models.ManyToManyField(to=swapper.get_model_name('blog', 'BlogPage'), blank=True, through=swapper.get_model_name('blog', 'BlogCategoryBlogPage')),
         ),
         migrations.AlterField(
             model_name='blogcategory',

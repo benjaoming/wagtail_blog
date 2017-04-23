@@ -14,7 +14,11 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name='blogcategoryblogpage',
-            options={},
+            options={
+                'abstract': False,
+                'ordering': ['sort_order'],
+                'swappable': swapper.swappable_setting('blog', 'BlogCategoryBlogPage'),
+            },
         ),
         migrations.RemoveField(
             model_name='blogcategoryblogpage',

@@ -9,6 +9,7 @@ from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
+from modelcluster.fields import ParentalKey
 from modelcluster.tags import ClusterTaggableManager
 from taggit.models import Tag
 from wagtail.wagtailadmin.edit_handlers import (
@@ -31,7 +32,7 @@ def get_blog_context(context):
     BlogPage = swapper.load_model("blog", "BlogPage")
     context['authors'] = get_user_model().objects.filter(
         owned_pages__live=True,
-        owned_pages__content_type__model=ContentType.get_all_objects_for_this_type(BlogPage).model
+        owned_pages__content_type__model=ContentType.objects.get_for_model(BlogPage).model
     ).annotate(Count('owned_pages')).order_by('-owned_pages__count')
     context['all_categories'] = BlogCategory.objects.all()
     context['root_categories'] = BlogCategory.objects.filter(
@@ -48,7 +49,7 @@ class BlogIndexPageBase(Page):
     @property
     def blogs(self):
         # Get list of blog pages that are descendants of this page
-        BlogPage = swapper.load_module("blog", "BlogPage")
+        BlogPage = swapper.load_model("blog", "BlogPage")
         blogs = BlogPage.objects.descendant_of(self).live()
         blogs = blogs.order_by(
             '-date'
@@ -188,7 +189,7 @@ def limit_author_choices():
 
 class BlogPageBase(Page):
     body = RichTextField(verbose_name=_('body'), blank=True)
-    tags = ClusterTaggableManager(through='blog.BlogPageTag', blank=True)
+    tags = ClusterTaggableManager(through=swapper.get_model_name('blog', 'BlogPageTag'), blank=True)
     date = models.DateField(
         _("Post date"), default=datetime.datetime.today,
         help_text=_("This date may be displayed on the blog post. It is not "
@@ -215,7 +216,7 @@ class BlogPageBase(Page):
         index.SearchField('body'),
     ]
     blog_categories = models.ManyToManyField(
-        swapper.get_model_name('blog', 'BlogCategory'), through='blog.BlogCategoryBlogPage', blank=True)
+        swapper.get_model_name('blog', 'BlogCategory'), through=swapper.get_model_name('blog', 'BlogCategoryBlogPage'), blank=True)
 
     settings_panels = [
         MultiFieldPanel([
@@ -264,3 +265,15 @@ class BlogPageBase(Page):
         verbose_name_plural = _('Blog pages')
 
     parent_page_types = [swapper.get_model_name("blog", "BlogIndexPage")]
+
+
+class BlogCategoryBlogPageBase(models.Model):
+    category = models.ForeignKey(
+        swapper.get_model_name('blog', 'BlogCategory'), related_name="+", verbose_name=_('Category'))
+    page = ParentalKey(swapper.get_model_name('blog', 'BlogPage'), related_name='categories')
+    panels = [
+        FieldPanel('category'),
+    ]
+    
+    class Meta:
+        abstract = True

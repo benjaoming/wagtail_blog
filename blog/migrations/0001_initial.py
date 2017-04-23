@@ -19,6 +19,8 @@ class Migration(migrations.Migration):
         swapper.dependency('blog', 'BlogIndexPage'),
         swapper.dependency('blog', 'BlogCategory'),
         swapper.dependency('blog', 'BlogTag'),
+        swapper.dependency('blog', 'BlogPageTag'),
+        swapper.dependency('blog', 'BlogCategoryBlogPage'),
     ]
 
     operations = [
@@ -45,6 +47,7 @@ class Migration(migrations.Migration):
             options={
                 'abstract': False,
                 'ordering': ['sort_order'],
+                'swappable': swapper.swappable_setting('blog', 'BlogCategoryBlogPage'),
             },
             bases=(models.Model,),
         ),
@@ -81,13 +84,14 @@ class Migration(migrations.Migration):
             ],
             options={
                 'abstract': False,
+                'swappable': swapper.swappable_setting('blog', 'BlogPageTag'),
             },
             bases=(models.Model,),
         ),
         migrations.AddField(
             model_name='blogpage',
             name='tags',
-            field=modelcluster.tags.ClusterTaggableManager(help_text='A comma-separated list of tags.', verbose_name='Tags', to='taggit.Tag', blank=True, through='blog.BlogPageTag'),
+            field=modelcluster.tags.ClusterTaggableManager(help_text='A comma-separated list of tags.', verbose_name='Tags', to='taggit.Tag', blank=True, through=swapper.get_model_name('blog', 'BlogPageTag')),
             preserve_default=True,
         ),
         migrations.AddField(

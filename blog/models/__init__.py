@@ -28,10 +28,6 @@ class BlogTag(base.BlogTagBase):
         swappable = swapper.swappable_setting('blog', 'BlogTag')
 
 
-class BlogPageTag(TaggedItemBase):
-    content_object = ParentalKey(swapper.get_model_name('blog', 'BlogPage'), related_name='tagged_items')
-
-
 class BlogCategory(base.BlogCategoryBase):
 
     class Meta:
@@ -41,10 +37,14 @@ class BlogCategory(base.BlogCategoryBase):
         ordering = ['name']
 
 
-class BlogCategoryBlogPage(models.Model):
-    category = models.ForeignKey(
-        swapper.get_model_name('blog', 'BlogCategory'), related_name="+", verbose_name=_('Category'))
-    page = ParentalKey(swapper.get_model_name('blog', 'BlogPage'), related_name='categories')
-    panels = [
-        FieldPanel('category'),
-    ]
+class BlogCategoryBlogPage(base.BlogCategoryBlogPageBase):
+
+    class Meta:
+        swappable = swapper.swappable_setting('blog', 'BlogCategoryBlogPage')
+
+
+class BlogPageTag(TaggedItemBase):
+    content_object = ParentalKey(swapper.get_model_name('blog', 'BlogPage'), related_name='tagged_items')
+
+    class Meta:
+        swappable = swapper.swappable_setting('blog', 'BlogPageTag')
