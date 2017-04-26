@@ -1,8 +1,15 @@
+from wagtail.wagtailadmin.edit_handlers import (
+    FieldPanel, MultiFieldPanel, FieldRowPanel, InlinePanel)
+from wagtail.wagtailcore.fields import RichTextField
+from wagtail.wagtailcore.models import Page
+from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from modelcluster.fields import ParentalKey
 from taggit.models import TaggedItemBase
 from wagtail.wagtailadmin.edit_handlers import FieldPanel
+from wagtail.wagtailsnippets.models import register_snippet
 
 import swapper
 
@@ -21,6 +28,7 @@ class BlogIndexPage(base.BlogIndexPageBase):
         swappable = swapper.swappable_setting('blog', 'BlogIndexPage')
 
 
+@register_snippet
 class BlogTag(base.BlogTagBase):
 
     class Meta:

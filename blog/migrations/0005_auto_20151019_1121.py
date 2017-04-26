@@ -8,7 +8,7 @@ import swapper
 
 
 def default_author(apps, schema_editor):
-    BlogPage = apps.get_model('blog', 'BlogPage')
+    BlogPage = swapper.load_model('blog', 'BlogPage')
     for blog in BlogPage.objects.all():
         if not blog.author:
             blog.author = blog.owner
@@ -20,6 +20,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('taggit', '0002_auto_20150616_2121'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        swapper.dependency('blog', 'BlogPage'),
         ('blog', '0004_auto_20150427_2047'),
     ]
 
@@ -54,5 +55,5 @@ class Migration(migrations.Migration):
             name='date',
             field=models.DateField(default=datetime.datetime.today, help_text='This date may be displayed on the blog post. It is not used to schedule posts to go live at a later date.', verbose_name='Post date'),
         ),
-        migrations.RunPython(default_author, reverse_code=migrations.RunPython.noop),
+        # migrations.RunPython(default_author, reverse_code=migrations.RunPython.noop),
     ]

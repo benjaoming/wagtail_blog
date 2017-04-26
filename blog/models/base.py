@@ -164,10 +164,7 @@ class BlogCategoryBase(models.Model):
         return super(BlogCategoryBase, self).save(*args, **kwargs)
 
 
-@register_snippet
-class BlogTagBase(Tag):
-    class Meta:
-        proxy = True
+BlogTagBase = Tag
 
 
 def limit_author_choices():
@@ -228,7 +225,11 @@ class BlogPageBase(Page):
         FieldPanel('date'),
         FieldPanel('author'),
     ]
-# 
+
+
+# Because of:
+# AttributeError: type object 'BlogPage' has no attribute 'categories'
+#
 #     content_panels = [
 #         FieldPanel('title', classname="full title"),
 #         MultiFieldPanel([

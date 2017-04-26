@@ -11,15 +11,3 @@ LIMIT_AUTHOR_CHOICES = getattr(settings, 'BLOG_LIMIT_AUTHOR_CHOICES_GROUP', None
 
 #: Set to true if limiting authors to multiple groups and want to add is_staff users as well.
 LIMIT_AUTHOR_CHOICES_ADMIN = getattr(settings, 'BLOG_LIMIT_AUTHOR_CHOICES_ADMIN', False)
-
-#: Model path: 'app.ModelName'
-MODEL_PAGE = getattr(settings, 'BLOG_BLOGPAGE_MODEL', None)
-
-#: Model path: 'app.ModelName'
-MODEL_INDEX = getattr(settings, 'BLOG_BLOGINDEXPAGE_MODEL', None)
-
-#: Model path: 'app.ModelName'
-MODEL_CATEGORY = getattr(settings, 'BLOG_BLOGCATEGORY_MODEL', None)
-
-#: Model path: 'app.ModelName'
-MODEL_TAG = getattr(settings, 'BLOG_BLOGTAG_MODEL', None)
