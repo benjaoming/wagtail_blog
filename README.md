@@ -41,7 +41,7 @@ See http://docs.wagtail.io
 - `BLOG_LIMIT_AUTHOR_CHOICES_GROUP` Optionally set this to limit the author field choices based on this Django Group. Otherwise it defaults to check if user is_staff. Set to a tuple to allow multiple groups.
 - `BLOG_LIMIT_AUTHOR_CHOICES_ADMIN` Set to true if limiting authors to multiple groups and want to add is_staff users as well.
 
-## Customizing models
+## Swappable models
 
 Wagtail_blog uses swappable models.
 
@@ -49,15 +49,44 @@ This is the same pattern as used by `django.contrib.auth.models.User`. It
 means, that you can write your own blog model, inheriting from the base models
 provided in `blog.models.base`.
 
-- `BLOG_BLOGPAGE_MODEL` - Used for blog posts.
-- `BLOG_BLOGINDEXPAGE_MODEL` - The index page type used for lists of blog posts.
-- `BLOG_BLOGCATEGORY_MODEL` - Category model
-- `BLOG_BLOGTAG_MODEL` - Model for tags, (default: Proxy of `taggit.Tag`).
-
+- `BLOG_BLOGINDEXPAGE_MODEL` = "blog.BlogIndex"
+- `BLOG_BLOGPAGE_MODEL` = "blog.BlogPage"
+- `BLOG_BLOGPAGETAG_MODEL` = "blog.BlogPageTag"
+- `BLOG_BLOGCATEGORY_MODEL` = "blog.BlogCategory"
+- `BLOG_BLOGCATEGORYBLOGPAGE_MODEL` = "blog.BlogCategoryBlogPage"
+- `BLOG_BLOGTAG_MODEL` = "blog.BlogTag"
 
 Example:
 
     BLOG_BLOGPAGE_MODEL = "myapp.BlogPage"
+
+### How to implement swappable models
+
+It's necessary that you follow these steps:
+
+1. Add `blog` to `INSTALLED_APPS` together with your application containing your
+   models to be swapped in. **But don't run migrations yet!** 
+  
+1. Implement your swappable models *without* modifications to the base models,
+   that means without adding any extra fields. For instance:
+   
+   ```python
+   from blog.models.base import BlogPageBase
+   class MyBlogPage(BlogPageBase):
+      pass
+   ```
+
+1. Change all the settings to point to your swappable models.
+
+1. Run `python manage.py makemigrations your_app` to create migrations.
+
+1. Now you have the initial migrations and you can run `python manage.py migrate`.
+
+1. Test that everything is working. You have now swapped in your own models, and
+   you can start customizing these.
+
+1. Add fields, create new migrations etc.
+
 
 # Import from WordPress
 
