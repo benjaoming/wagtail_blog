@@ -229,19 +229,19 @@ class BlogPageBase(Page):
         FieldPanel('author'),
     ]
 
-
-# Because of:
-# AttributeError: type object 'BlogPage' has no attribute 'categories'
-#
-#     content_panels = [
-#         FieldPanel('title', classname="full title"),
-#         MultiFieldPanel([
-#             FieldPanel('tags'),
-#             InlinePanel('categories', label=_("Categories")),
-#         ], heading="Tags and Categories"),
-#         ImageChooserPanel('header_image'),
-#         FieldPanel('body', classname="full"),
-#     ]
+    # Because of:
+    # AttributeError: type object 'BlogPage' has no attribute 'categories'
+    # ...we can only have this when there's no swapping at stake.
+    if not settings.SWAPPING_DETECTED:
+        content_panels = [
+            FieldPanel('title', classname="full title"),
+            MultiFieldPanel([
+                FieldPanel('tags'),
+                InlinePanel('categories', label=_("Categories")),
+            ], heading="Tags and Categories"),
+            ImageChooserPanel('header_image'),
+            FieldPanel('body', classname="full"),
+        ]
 
     def save_revision(self, *args, **kwargs):
         if not self.author:

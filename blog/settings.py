@@ -11,3 +11,9 @@ LIMIT_AUTHOR_CHOICES = getattr(settings, 'BLOG_LIMIT_AUTHOR_CHOICES_GROUP', None
 
 #: Set to true if limiting authors to multiple groups and want to add is_staff users as well.
 LIMIT_AUTHOR_CHOICES_ADMIN = getattr(settings, 'BLOG_LIMIT_AUTHOR_CHOICES_ADMIN', False)
+
+SWAPPING_DETECTED = False
+for s in ['BLOG_BLOGINDEXPAGE_MODEL', 'BLOG_BLOGPAGE_MODEL', 'BLOG_BLOGPAGETAG_MODEL', 'BLOG_BLOGCATEGORY_MODEL', 'BLOG_BLOGCATEGORYBLOGPAGE_MODEL', 'BLOG_BLOGTAG_MODEL']:
+    if getattr(settings, s, False):
+        SWAPPING_DETECTED = True
+        break
