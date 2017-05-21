@@ -7,6 +7,9 @@ import datetime
 import swapper
 
 
+from blog import settings as blog_settings
+
+
 def default_author(apps, schema_editor):
     BlogPage = swapper.load_model('blog', 'BlogPage')
     for blog in BlogPage.objects.all():
@@ -55,5 +58,9 @@ class Migration(migrations.Migration):
             name='date',
             field=models.DateField(default=datetime.datetime.today, help_text='This date may be displayed on the blog post. It is not used to schedule posts to go live at a later date.', verbose_name='Post date'),
         ),
-        # migrations.RunPython(default_author, reverse_code=migrations.RunPython.noop),
     ]
+
+    if not blog_settings.SWAPPING_DETECTED:
+        operations.append(
+            migrations.RunPython(default_author, reverse_code=migrations.RunPython.noop),
+        )
