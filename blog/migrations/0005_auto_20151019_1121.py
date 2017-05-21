@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='blogcategory',
             name='parent',
-            field=models.ForeignKey(to=swapper.get_model_name('blog', 'BlogCategory'), help_text='Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional.', related_name='children', null=True, blank=True),
+            field=models.ForeignKey(blank=True, help_text='Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional.', null=True, on_delete=models.deletion.CASCADE, related_name='children', to=swapper.get_model_name('blog', 'BlogCategory')),
         ),
         migrations.AlterField(
             model_name='blogpage',

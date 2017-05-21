@@ -122,7 +122,10 @@ class BlogCategoryBase(models.Model):
         max_length=80, unique=True, verbose_name=_('Category Name'))
     slug = models.SlugField(unique=True, max_length=80)
     parent = models.ForeignKey(
-        'self', blank=True, null=True, related_name="children",
+        swapper.get_model_name('blog', 'BlogCategory'),
+        blank=True,
+        null=True,
+        related_name="children",
         help_text=_(
             'Categories, unlike tags, can have a hierarchy. You might have a '
             'Jazz category, and under that have children categories for Bebop'

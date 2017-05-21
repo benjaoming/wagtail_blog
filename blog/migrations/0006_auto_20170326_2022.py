@@ -16,15 +16,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='BlogTagBase',
-            fields=[
-            ],
-            options={
-                'proxy': True,
-            },
-            bases=('taggit.tag',),
-        ),
         migrations.AlterModelOptions(
             name='blogcategoryblogpage',
             options={
