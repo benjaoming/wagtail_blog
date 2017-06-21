@@ -28,8 +28,8 @@ from django.contrib.contenttypes.models import ContentType
 
 def get_blog_context(context):
     """ Get context data useful on all blog related pages """
-    from . import BlogCategory
     BlogPage = swapper.load_model("blog", "BlogPage")
+    BlogCategory = swapper.load_model("blog", "BlogCategory")
     context['authors'] = get_user_model().objects.filter(
         owned_pages__live=True,
         owned_pages__content_type__model=ContentType.objects.get_for_model(BlogPage).model
