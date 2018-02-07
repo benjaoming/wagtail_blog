@@ -43,18 +43,21 @@ See http://docs.wagtail.io
 
 ## Swappable models
 
-Wagtail_blog uses swappable models.
+Wagtail_blog uses swappable models. To use them, first thing you need is to
+install the dependency `swapper`:
+
+    pip install swapper
 
 This is the same pattern as used by `django.contrib.auth.models.User`. It
 means, that you can write your own blog model, inheriting from the base models
 provided in `blog.models.base`.
 
-- `BLOG_BLOGINDEXPAGE_MODEL` = "blog.BlogIndex"
-- `BLOG_BLOGPAGE_MODEL` = "blog.BlogPage"
-- `BLOG_BLOGPAGETAG_MODEL` = "blog.BlogPageTag"
-- `BLOG_BLOGCATEGORY_MODEL` = "blog.BlogCategory"
-- `BLOG_BLOGCATEGORYBLOGPAGE_MODEL` = "blog.BlogCategoryBlogPage"
-- `BLOG_BLOGTAG_MODEL` = "blog.BlogTag"
+- `BLOG_BLOGINDEXPAGE_MODEL = "blog.BlogIndex"`
+- `BLOG_BLOGPAGE_MODEL = "blog.BlogPage"`
+- `BLOG_BLOGPAGETAG_MODEL = "blog.BlogPageTag"`
+- `BLOG_BLOGCATEGORY_MODEL = "blog.BlogCategory"`
+- `BLOG_BLOGCATEGORYBLOGPAGE_MODEL = "blog.BlogCategoryBlogPage"`
+- `BLOG_BLOGTAG_MODEL = "blog.BlogTag"`
 
 Example:
 
@@ -76,7 +79,10 @@ It's necessary that you follow these steps:
       pass
    ```
 
-1. Change all the settings to point to your swappable models.
+1. Change all the settings to point to your swappable models. The settings are
+   listed above. For instance:
+
+       BLOG_BLOGPAGE_MODEL = "myapp.BlogPage"
 
 1. Run `python manage.py makemigrations your_app` to create migrations.
 

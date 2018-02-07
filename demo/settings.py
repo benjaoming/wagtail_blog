@@ -27,7 +27,7 @@ ALLOWED_HOSTS = []
 SITE_ID = 1
 # Application definition
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django_comments',
     'django_comments_xtd',
     'django.contrib.admin',
@@ -55,7 +55,7 @@ INSTALLED_APPS = (
     'wagtail.wagtailsites',
 
     'blog',
-)
+]
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
