@@ -12,6 +12,7 @@ from wagtail.wagtailcore.models import Page
 from wagtail.wagtailadmin.edit_handlers import (
     FieldPanel, InlinePanel, MultiFieldPanel, FieldRowPanel)
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
+from wagtail.wagtailimages import get_image_model_string
 from wagtail.wagtailsnippets.models import register_snippet
 from wagtail.wagtailsearch import index
 from taggit.models import TaggedItemBase, Tag
@@ -198,7 +199,7 @@ class BlogPage(Page):
                     "used to schedule posts to go live at a later date.")
     )
     header_image = models.ForeignKey(
-        'wagtailimages.Image',
+        get_image_model_string(),
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
